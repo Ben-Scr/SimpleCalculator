@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace SimpleCalculator
+namespace BenScr.SimpleCalculator
 {
     /// <summary>
     /// Interaction logic for App.xaml

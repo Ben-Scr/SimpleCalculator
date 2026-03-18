@@ -1,33 +1,15 @@
 ﻿using BenScr.Math.Parser;
-using SimpleCalculator;
 using System.ComponentModel;
 using System.Data;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace SimpleCalculator
+namespace BenScr.SimpleCalculator
 {
     public partial class MainWindow : Window
     {
-        private DataTable DataTable = new DataTable();
-        private string SavePath = string.Empty;
-
         public MainWindow()
         {
             InitializeComponent();
-            FileManager.Initialize();
-
-            SavePath = System.IO.Path.Combine(FileManager.AppDataPath, "SimpleCalculator", "Meta.txt");
-
-            Display.Text = FileManager.LoadString(SavePath);
             Display.TextChanged += Display_TextChanged;
             RegisterButtonEvents();
             this.Closing += MainWindow_OnClosing;
@@ -36,7 +18,6 @@ namespace SimpleCalculator
         private void MainWindow_OnClosing(object sender, CancelEventArgs e)
         {
             UnRegisterButtonEvents();
-            FileManager.SaveString(SavePath, Display.Text);
         }
 
         private void Display_TextChanged(object sender, RoutedEventArgs e)
