@@ -1,4 +1,5 @@
-﻿using SimpleCalculator;
+﻿using BenScr.Math.Parser;
+using SimpleCalculator;
 using System.ComponentModel;
 using System.Data;
 using System.Text;
@@ -12,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Calculator
+namespace SimpleCalculator
 {
     public partial class MainWindow : Window
     {
@@ -40,7 +41,7 @@ namespace Calculator
 
         private void Display_TextChanged(object sender, RoutedEventArgs e)
         {
-            const string allowedChars = "0123456789 +-/%^";
+            const string allowedChars = "0123456789 +-/%^x()*,.";
             Display.Text = new string(Display.Text.Where(c => allowedChars.Contains(c)).ToArray());
         }
 
@@ -56,6 +57,7 @@ namespace Calculator
             BtnSeven.Click += BtnSeven_OnClick;
             BtnEight.Click += BtnEight_OnClick;
             BtnNine.Click += BtnNine_OnClick;
+            BtnComma.Click += BtnComma_OnClick;
 
             BtnPlus.Click += BtnPlus_OnClick;
             BtnMinus.Click += BtnMinus_OnClick;
@@ -79,6 +81,7 @@ namespace Calculator
             BtnSeven.Click -= BtnSeven_OnClick;
             BtnEight.Click -= BtnEight_OnClick;
             BtnNine.Click -= BtnNine_OnClick;
+            BtnComma.Click += BtnComma_OnClick;
 
             BtnPlus.Click -= BtnPlus_OnClick;
             BtnMinus.Click -= BtnMinus_OnClick;
@@ -100,58 +103,7 @@ namespace Calculator
 
         private void BtnCalculate_OnClick(object sender, RoutedEventArgs e)
         {
-            Display.Text = TryCompute(Display.Text);
-        }
-
-        private string TryCompute(string calculation)
-        {
-            string compute = "Error";
-
-            if (calculation.Length == 0 || calculation.Length > 500) return compute;
-
-            try
-            {
-                calculation = Precalculate(calculation);
-                compute = DataTable.Compute(calculation, null)?.ToString() ?? throw new Exception("Compute failed."); // Warning: this function may not be 100% DOS safe
-            }
-            catch (Exception ex)
-            {
-#if DEBUG
-                MessageBox.Show(ex.Message + "\nSource location:" + ex.StackTrace);
-#endif
-                return compute;
-            }
-
-            return compute;
-        }
-
-        private string Precalculate(string calculation) // Note: Simple prototype function for precalculating certain operations
-        {
-            string[] splits = calculation.Split(' ');
-
-            foreach (string s in splits)
-            {
-                if (s.Contains('^'))
-                {
-                    string[] valueSplits = s.Split('^');
-
-                    if (valueSplits.Length == 2)
-                    {
-                        string newValue = Math.Pow(double.Parse(valueSplits[0]), double.Parse(valueSplits[1])).ToString();
-                        calculation = calculation.Replace(s, newValue);
-                    }
-                }
-                else if (s.ToLower().Contains("cos"))
-                {
-
-                }
-                else if (s.ToLower().Contains("sin"))
-                {
-
-                }
-            }
-
-            return calculation;
+            Display.Text = Calculator.Evaluate<string>(Display.Text);
         }
 
         private void BtnClear_OnClick(object sender, RoutedEventArgs e)
@@ -171,6 +123,10 @@ namespace Calculator
         private void BtnPlus_OnClick(object sender, RoutedEventArgs e)
         {
             AddDisplayText(" + ");
+        }
+        private void BtnComma_OnClick(object sender, RoutedEventArgs e)
+        {
+            AddDisplayText(",");
         }
         private void BtnMinus_OnClick(object sender, RoutedEventArgs e)
         {
